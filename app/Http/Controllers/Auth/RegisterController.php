@@ -17,7 +17,7 @@ class RegisterController extends Controller
     public function store(Request $request){
         $rules = [
             'name' => 'required|string|max:255',
-            'email' => 'required|email',
+            'email' => 'required|email|unique:users',
             'password' => 'required'
         ];
         $messages = [
@@ -25,6 +25,7 @@ class RegisterController extends Controller
             'email.required' => 'Email is required.',
             'email.email' => 'Email must be a valid email address.',
             'password.required' => 'Password is required.',
+            'email.unique' => 'Email đã tồn tại',
         ];
     
         $validator = Validator::make($request->all(), $rules, $messages);

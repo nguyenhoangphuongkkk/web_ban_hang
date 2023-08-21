@@ -36,11 +36,11 @@
         <div class="col-md-9 col-sm-8">
             <div class="row">
                 <div class="col-xs-6">
-                    <img id="imgage_product" src="{{ asset('storage/'.$product->image) }}" alt="your image"
-                         style="max-width: 200px; height:100px; margin-bottom: 10px;" class="img-fluid"/>
-                    <img id="imgage_product" src="" alt="your image"
+                    <img src="{{ asset('storage/'.$product->image) }}" alt="your image"
                          style="max-width: 200px; height:100px; margin-bottom: 10px;" class="img-fluid"/>
                     <input type="file" name="image" accept="image/*" class="form-control-file" id="image">
+                    <img id="imgage_product" src="https://previews.123rf.com/images/blankstock/blankstock2006/blankstock200603160/150287533-buyer-with-shopping-cart-line-icon-customer-with-bags-sign-supermarket-client-symbol-colorful.jpg" alt="your image"
+                    style="max-width: 200px; height:100px; margin-bottom: 10px;" class="img-fluid"/>
                     @error('image')
                     <span class="text-danger">{{ $message }}</span>
                     @enderror

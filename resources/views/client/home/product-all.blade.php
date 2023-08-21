@@ -206,7 +206,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="why-text">
-                                                    <h4>{{ $product->product_name }}</h4>
+                                                    <a href="{{ route('detail',$product->id) }}"><h4>{{ $product->product_name }}</h4></a>
                                                     <h5> ${{ $product->price }}</h5>
                                                 </div>
                                             </div>
@@ -239,7 +239,7 @@
                                             </div>
                                             <div class="col-sm-6 col-md-6 col-lg-8 col-xl-8">
                                                 <div class="why-text full-width">
-                                                    <h4>{{ $product->product_name }}</h4>
+                                                    <a href="{{ route('detail',$product->id) }}"><h4>{{ $product->product_name }}</h4></a>
                                                     <h5> <del>$ 60.00</del> ${{ $product->price }}</h5>
                                                     <p>{{ $product->description }}</p>
                                                     @if(Auth::check())

@@ -18,8 +18,8 @@
                                 <th class="border-top-0">Id</th>
                                 <th class="border-top-0">Name</th>
                                 <th class="border-top-0">Discount Percent</th>
-                                <th class="border-top-0">Start Date<th>   
-                                <th class="border-top-0">End Date<th>   
+                                <th class="border-top-0">Start Date</th>   
+                                <th class="border-top-0">End Date</th>   
                                 <th class="border-top-0"><a href="{{ route('create_promotion') }}" class="btn btn-success">Create</a></th>
                             </tr>
                         </thead>

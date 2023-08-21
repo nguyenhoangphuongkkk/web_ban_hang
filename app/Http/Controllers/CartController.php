@@ -6,17 +6,31 @@ use App\Models\Cart;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\Invoice;
+use App\Models\Promotion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
 // Hiển thị danh sách sản phẩm đã mua trong rỏ hàng
-public function index()
+public function index(Request $request)
 {   
+    if($request->session()->exists('cart_id')) {
+        $cart_id =$request->session()->get('cart_id');
+    }
+    
     $category = Category::all();
     if (auth()->check()) {
         $cartItems = Cart::where('user_id', auth()->user()->id)->get();
+        
+        // $promotion = Invoice::where('cart_id', $cart_id)
+        //     ->join('promotions', 'invoice.promotion_id', '=', 'promotions.id')
+        //     ->select('promotions.title', 'promotions.discount_percent')
+        //     ->first();
+        // // if($promotion)
+        // dd($promotion);
+
         return view('client.cart.index', compact('cartItems','category'));
     } else {
         // Handle the case when the user is not logged in
@@ -62,12 +76,26 @@ public function index()
 
 //     return redirect()->route('cart_index')->with('success', 'Đã thêm sản phẩm vào rỏ hàng.');
 // }
-public function addToCart($product_id, $user_id, $quantity = 1)
+public function addToCart(Request $request, $product_id, $user_id, $quantity = 1)
 {
-    // Kiểm tra sự tồn tại của sản phẩm và người dùng
+    function generateUniqueRandomNumber() {
+        do {
+            $randomNumber = mt_rand(1000, 9999); // Thay đổi khoảng số ngẫu nhiên theo nhu cầu của bạn
+        } while (Cart::where('cart_id', $randomNumber)->exists());
+        
+        return $randomNumber;
+    }
+    if($request->session()->exists('cart_id')) {
+        $cart_id =$request->session()->get('cart_id');
+
+    }else{
+        $cart_id = generateUniqueRandomNumber();
+        $request->session()->put('cart_id', $cart_id);
+    }
+
     $product = Product::find($product_id);
     $user = User::find($user_id);
-
+    // Kiểm tra sự tồn tại của sản phẩm và người dùng
     if (!$product || !$user) {
         return redirect()->back()->with('error', 'Sản phẩm hoặc người dùng không tồn tại.');
     }
@@ -75,6 +103,7 @@ public function addToCart($product_id, $user_id, $quantity = 1)
 
     // Thêm sản phẩm vào giỏ hàng
     Cart::create([
+        'cart_id' => $cart_id,
         'product_id' => $product_id,
         'user_id' => $user_id,
         'quantity' => $quantity,
@@ -117,10 +146,38 @@ public function updateCart(Request $request)
     // Tính toán lại thành tiền của sản phẩm
     $itemTotal = $product->price * $quantity;
 
-    Cart::where('id', $id)->update(['quantity' => $quantity]);
+    $cart_id = $request->input('cart_id');
 
-    return response()->json(['itemTotal' => $itemTotal]);
+    Cart::where('id', $id)->update(['quantity' => $quantity,'total_price'=>$itemTotal]);
+
+    $total = Cart::where('cart_id', $cart_id)->sum('total_price');
+
+
+    return response()->json(['id'=>$id,'itemTotal' => $itemTotal, 'total' => $total]);
 
 }
+public function promotion(Request $request){
 
+    if($request->session()->exists('cart_id')) {
+        $cart_id =$request->session()->get('cart_id');
+    }
+
+    $title = $request->input('title');
+    $promotion = Promotion::where('title', $title)->first();
+    if ($promotion) {
+        // Lấy promotion_id từ bảng promotions và lưu vào bảng carts
+        $cart = Invoice::create(['cart_id' => $cart_id,'promotion_id' => $promotion->id]);
+// return ($promotion->id);
+        return redirect('/cart');
+    }
+}
+
+    public function calcTotal(Request $request) 
+    {
+        $cart_id = $request->input('cart_id');
+
+        $total = Cart::sum('total_price')->where('cart_id', $cart_id)->first();   
+
+        return response()->json(['total' => $total]);        
+    }
 }

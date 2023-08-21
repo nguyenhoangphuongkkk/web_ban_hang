@@ -106,13 +106,8 @@
                         <!-- User profile and search -->
                         <!-- ============================================================== -->
                         <li class="nav-item">    
-                            @if(Auth::check()) <!-- Kiểm tra xem người dùng đã đăng nhập hay chưa -->
-                            <form action="{{ route('logout') }}" method="POST">
-                                @csrf
-                                <button class="btn btn-secondary" type="submit">Đăng xuất</button>
-                                </form>
-                            @else
-                                <a class="nav-link" href="{{ route('auth.login') }}">Đăng nhập</a>
+                            @if(Auth::check())
+                            <a href="{{ route('logout') }}" class="nav-link btn btn-primary ">Logout</a>
                             @endif</li>
                     </ul>
                 </div>

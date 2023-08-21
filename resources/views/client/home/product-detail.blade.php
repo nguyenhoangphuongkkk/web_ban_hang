@@ -137,7 +137,7 @@
                                         </div>
                                     </div>
                                     <div class="why-text">
-                                        <h4>{{ $products->product_name }}</h4>
+                                        <a href="{{ route('detail',$product->id) }}"><h4>{{ $product->product_name }}</h4></a>
                                         <h5> ${{ $products->price }}</h5>
                                     </div>
                                 </div>

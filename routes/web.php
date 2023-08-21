@@ -33,8 +33,7 @@ Route::post('/update-cart', [CartController::class,'updateCart'])->name('cart.up
 Route::get('/cart/add/{product_id}/{user_id}', [CartController::class,'addToCart'])->name('cart.add');
 Route::get('/cart',  [CartController::class,'index'])->name('cart_index');
 Route::get('/cart/{id}/remove', [CartController::class,'removeFromCart'])->name('cart.remove');
-
-
+Route::post('/promotion/add',[CartController::class,'promotion'])->name('promotion.client');
 
 //ADMIN
 

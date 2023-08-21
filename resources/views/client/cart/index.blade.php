@@ -1,6 +1,9 @@
 @extends('client.templates.layout')
 @section('content')
 
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
+
 <!-- Start Top Search -->
 <div class="top-search">
     <div class="container">
@@ -53,30 +56,30 @@
                         </thead>
                         <tbody>
                             @foreach ($cartItems as $item)
-                            <tr class="cart-id" data-cart-id="{{ $item->id }}">
+                            <tr>
                                 <td class="thumbnail-img">
                                     <a href="#">
-                                <img class="img-fluid" src="{{ asset('storage/'.$item->product->image) }}" alt="" />
-                            </a>
+                                        <img class="img-fluid" src="{{ asset('storage/'.$item->product->image) }}" alt="" />
+                                    </a>
                                 </td>
                                 <td class="name-pr">
                                     <a href="#">
-                                {{ $item->product->product_name }}
-                            </a>
+                                        {{ $item->product->product_name }}
+                                    </a>
                                 </td>
                                 <td class="price-pr">
                                     <p>${{ $item->product->price }}</p>
                                 </td>
                                 <td data-th="Quantity">
-                                    <input type="number" class="quantity-input" data-product-id="{{ $item->product_id }}" value="{{ $item->quantity }}" min="1">
+                                    <input type="number" class="quantity-input" data-product-id="{{ $item->product_id }}" data-test-id="{{ $item->id }}" value="{{ $item->quantity }}" min="1">
                                 </td>
-                                <td class="total-pr">
+                                <td class="total-pr{{ $item->id }}">
                                     <p>${{ $item->product->price *  $item->quantity }}</p>
                                 </td>
                                 <td class="remove-pr">
                                     <a href="{{ route('cart.remove', ['id' => $item->id]) }}">
-                                <i class="fas fa-times"></i>
-                            </a>
+                                        <i class="fas fa-times"></i>
+                                    </a>
                                 </td>
                             </tr>
                             @endforeach
@@ -89,11 +92,10 @@
         <div class="row my-5">
             <div class="col-lg-6 col-sm-6">
                 <div class="coupon-box">
-                    <form action="/apply-discount" method="POST">
-                    <div class="input-group input-group-sm">
-
-                        
-                        <input class="form-control" name="discount_code" required type="text">
+                    <form action="{{ route('promotion.client') }}" method="POST">
+                        @csrf
+                    <div class="input-group input-group-sm">    
+                        <input class="form-control" value="" name="title" required type="text">
                         <div class="input-group-append">
                             <button class="btn btn-theme" type="submit">Apply Coupon</button>
                         </div>
@@ -104,7 +106,7 @@
             <div class="col-lg-6 col-sm-6">
             </div>
         </div>
-
+<input type="text" value="{{ session()->get('cart_id') ? session()->get('cart_id') : '' }}" hidden class="cart_id">
         <div class="row my-5">
             <div class="col-lg-8 col-sm-12"></div>
             <div class="col-lg-4 col-sm-12">
@@ -112,33 +114,21 @@
                     <h3>Order summary</h3>
                     <div class="d-flex">
                         <h4>Sub Total</h4>
-                        <div class="ml-auto font-weight-bold"> $ 130 </div>
+                        <div id="total-output" class="ml-auto font-weight-bold">  </div>
                     </div>
                     <div class="d-flex">
                         <h4>Discount</h4>
-                        <div class="ml-auto font-weight-bold"> $ 40 </div>
+                        <div id="discount" class="ml-auto font-weight-bold"> </div>
                     </div>
                     <hr class="my-1">
-                    <div class="d-flex">
-                        <h4>Coupon Discount</h4>
-                        <div class="ml-auto font-weight-bold"> $ 10 </div>
-                    </div>
-                    <div class="d-flex">
-                        <h4>Tax</h4>
-                        <div class="ml-auto font-weight-bold"> $ 2 </div>
-                    </div>
-                    <div class="d-flex">
-                        <h4>Shipping Cost</h4>
-                        <div class="ml-auto font-weight-bold"> Free </div>
-                    </div>
-                    <hr>
+                   
                     <div class="d-flex gr-total">
                         <h5>Grand Total</h5>
-                        <div class="ml-auto h5"> $ 388 </div>
+                        <div class="ml-auto h5" id="finalPrice">  </div>
                     </div>
                     <hr> </div>
             </div>
-            <div class="col-12 d-flex shopping-box"><a href="checkout.html" class="ml-auto btn hvr-hover">Checkout</a> </div>
+            <div class="col-12 d-flex shopping-box"><a href="#" class="ml-auto btn hvr-hover">Checkout</a> </div>
         </div>
 
     </div>
@@ -239,11 +229,12 @@ $(document).ready(function () {
   // Lắng nghe sự kiện thay đổi của phần tử có class .quantity-input
   $('.quantity-input').on('change', function () {
     var productId = $(this).data('product-id');
-    var id = $(".cart-id").data("cart-id");
-
+    // var id = $(".cart-id").data("cart-id");
+    var id = $(this).data('test-id');
     var newQuantity = $(this).val();
+    var cart_id = $('.cart_id').val();
 
-    console.log(id);
+    console.log(cart_id);
 
     // Gửi request Ajax để cập nhật dữ liệu lên server thông qua route cart.update
     $.ajax({
@@ -254,17 +245,18 @@ $(document).ready(function () {
         id: id,
         quantity: newQuantity,
         product_id: productId,
+        cart_id: cart_id
       },
       success: function (data) {
-        console.log(data);
-        
-        $('.total-pr').html('<p>$' + data.itemTotal + '</p>');
+        $('#total-output').text(data.total);
+        $('.total-pr'+data.id).html('<p>$' + data.itemTotal + '</p>');
       },
       error: function (xhr, status, error) {
         console.error('Lỗi khi gửi request Ajax:', error);
       }
     });
   });
+
 });
 
 </script>

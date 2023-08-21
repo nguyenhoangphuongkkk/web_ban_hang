@@ -23,21 +23,21 @@
             @csrf
             <div class="form-group">
               <label for="inputName">Tên:</label>
-              <input type="text" class="form-control" name="name"  placeholder="Nhập tên của bạn">
+              <input type="text" class="form-control" value="{{ old('name') }}"  name="name"  placeholder="Nhập tên của bạn">
             </div>
             @error('name')
             <span class="text-danger">{{ $message }}</span>
             @enderror
             <div class="form-group">
               <label for="inputEmail">Email:</label>
-              <input type="email" class="form-control" name="email"  placeholder="Nhập email của bạn">
+              <input type="email" class="form-control" name="email" value="{{ old('email') }}"  placeholder="Nhập email của bạn">
               @error('email')
               <span class="text-danger">{{ $message }}</span>
               @enderror
             </div>
             <div class="form-group">
               <label for="inputPassword">Mật khẩu:</label>
-              <input type="password" class="form-control" name="password"  placeholder="Nhập mật khẩu của bạn">
+              <input type="password" class="form-control" value="{{ old('password') }}" name="password"  placeholder="Nhập mật khẩu của bạn">
               @error('password')
               <span class="text-danger">{{ $message }}</span>
               @enderror
